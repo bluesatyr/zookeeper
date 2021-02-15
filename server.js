@@ -1,10 +1,26 @@
-// progress 11.1.5
+// progress 11.1.6
+// polar-journey-02002 <- Heroku App Name
 const { animals } = require('./data/animals.json');
 const express = require('express');
 const app = express();
 
 function filterByQuery(query, animalsArray) {
+    let personalityTraitsArray = [];
     let filteredResults = animalsArray;
+    if (query.personalityTraits) {
+        // If personalityTraits is a string, place it into a new array and save.
+        if (typeof query.personalityTraits === 'string') {
+            personalityTraitsArray = [query.personalityTraits];
+        } else {
+            personalityTraitsArray = query.personalityTraits;
+        }
+        // Loop through each trait in the personalityTraits array:
+        personalityTraitsArray.forEach(trait => {
+            filteredResults = filteredResults.filter(
+                animal => animal.personalityTraits.indexOf(trait) !== -1
+            );
+        });
+    }
     if (query.diet) {
         filteredResults = filteredResults.filter(animal => animal.diet === query.diet);
     }
@@ -26,6 +42,8 @@ app.get('/api/animals', (req, res) => {
     }
     res.json(results);
 });
+
+
 
 app.listen(3001, () => {
     console.log(`API server now on port 3001!`);
